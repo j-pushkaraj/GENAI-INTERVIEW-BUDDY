@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>AI Interview Buddy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Tailwind via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'ui-sans-serif', 'sans-serif'],
+          },
+          colors: {
+            brand: {
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+
+    /* ====== LIVING GRADIENT BACKGROUND ====== */
+
+    @keyframes chromaFlow {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes ambientBreath {
+      0%, 100% { filter: brightness(1) saturate(1); }
+      50%      { filter: brightness(1.18) saturate(1.25); }
+    }
+
+    .living-gradient {
+      position: fixed;
+      inset: 0;
+      z-index: -40;
+
+      background:
+        radial-gradient(1400px circle at 15% 10%, rgba(99,102,241,0.35), transparent 45%),
+        radial-gradient(1200px circle at 85% 20%, rgba(56,189,248,0.30), transparent 42%),
+        radial-gradient(1000px circle at 50% 88%, rgba(52,211,153,0.28), transparent 45%),
+        linear-gradient(
+          120deg,
+          #020617,
+          #0b1224,
+          #020617
+        );
+
+      background-size: 220% 220%;
+      animation:
+        chromaFlow 40s ease-in-out infinite,
+        ambientBreath 22s ease-in-out infinite;
+
+      will-change: background-position, filter;
+    }
+
+    /* Difficulty-based mood tweaks */
+    body[data-difficulty="easy"] .living-gradient {
+      background:
+        radial-gradient(1400px circle at 15% 10%, rgba(56,189,248,0.35), transparent 45%),
+        radial-gradient(1200px circle at 85% 20%, rgba(45,212,191,0.30), transparent 42%),
+        radial-gradient(1000px circle at 50% 88%, rgba(129,140,248,0.25), transparent 45%),
+        linear-gradient(
+          120deg,
+          #020617,
+          #02131d,
+          #020617
+        );
+      animation:
+        chromaFlow 46s ease-in-out infinite,
+        ambientBreath 26s ease-in-out infinite;
+    }
+
+    body[data-difficulty="medium"] .living-gradient {
+      /* default look */
+    }
+
+    body[data-difficulty="hard"] .living-gradient {
+      background:
+        radial-gradient(1400px circle at 10% 15%, rgba(129,140,248,0.5), transparent 45%),
+        radial-gradient(1200px circle at 90% 20%, rgba(248,113,113,0.35), transparent 42%),
+        radial-gradient(1000px circle at 50% 88%, rgba(52,211,153,0.22), transparent 45%),
+        linear-gradient(
+          120deg,
+          #020617,
+          #020014,
+          #020617
+        );
+      animation:
+        chromaFlow 28s ease-in-out infinite,
+        ambientBreath 18s ease-in-out infinite;
+    }
+
+    /* Soft animated glow blobs */
+    @keyframes glowPulse {
+      0%, 100% {
+        transform: scale(0.95);
+        opacity: 0.35;
+        filter: blur(90px);
+      }
+      50% {
+        transform: scale(1.15);
+        opacity: 0.8;
+        filter: blur(120px);
+      }
+    }
+
+    @keyframes floatSlow {
+      0% { transform: translateY(0px) translateX(0px); }
+      50% { transform: translateY(-12px) translateX(8px); }
+      100% { transform: translateY(0px) translateX(0px); }
+    }
+    @keyframes floatSlowReverse {
+      0% { transform: translateY(0px) translateX(0px); }
+      50% { transform: translateY(10px) translateX(-10px); }
+      100% { transform: translateY(0px) translateX(0px); }
+    }
+
+    /* Subtle noise overlay */
+    .noise-overlay {
+      pointer-events: none;
+      position: fixed;
+      inset: 0;
+      opacity: 0.18;
+      mix-blend-mode: soft-light;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='noStitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+      z-index: -5;
+    }
+
+    /* Card hover */
+    .card-hover-lift {
+      transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease, background-color 220ms ease;
+    }
+    .card-hover-lift:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.7);
+      border-color: rgba(129, 140, 248, 0.7);
+      background-color: rgba(15, 23, 42, 0.95);
+    }
+
+    /* Animated header line */
+    @keyframes scanLine {
+      0%   { transform: translateX(-20%); opacity: 0; }
+      20%  { opacity: 1; }
+      80%  { opacity: 1; }
+      100% { transform: translateX(120%); opacity: 0; }
+    }
+  </style>
+</head>
+<body
+  data-difficulty="{{ difficulty|default('') }}"
+  class="min-h-screen bg-slate-950 text-slate-100 antialiased font-sans"
+>
+
+  <!-- Layer 1: Living gradient background -->
+  <div class="living-gradient"></div>
+
+  <!-- Layer 2: Animated glow orbs -->
+  <div class="fixed -top-40 -left-32 w-80 h-80 rounded-full bg-indigo-500/35 -z-30"
+       style="animation: glowPulse 22s ease-in-out infinite;"></div>
+  <div class="fixed -bottom-40 -right-24 w-96 h-96 rounded-full bg-emerald-400/30 -z-30"
+       style="animation: glowPulse 28s ease-in-out infinite;"></div>
+  <div class="fixed top-1/3 -right-10 w-72 h-72 rounded-full bg-sky-400/30 -z-30"
+       style="animation: glowPulse 25s ease-in-out infinite;"></div>
+
+  <!-- Layer 3: Grid overlay -->
+  <div class="fixed inset-0 opacity-[0.06] pointer-events-none -z-20"
+       style="
+         background-image:
+           linear-gradient(to right, rgba(148,163,184,0.6) 1px, transparent 1px),
+           linear-gradient(to bottom, rgba(148,163,184,0.6) 1px, transparent 1px);
+         background-size: 46px 46px;
+       ">
+  </div>
+
+  <!-- Layer 4: Noise -->
+  <div class="noise-overlay"></div>
+
+  <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-10 py-6 sm:py-9">
+    <!-- Top nav / brand bar -->
+    <header class="flex items-center justify-between mb-7 sm:mb-9">
+      <div class="flex items-center gap-3 sm:gap-4">
+        <!-- Logo orb -->
+        <div class="relative">
+          <div class="h-10 w-10 sm:h-11 sm:w-11 rounded-3xl bg-gradient-to-tr from-indigo-500 via-sky-500 to-emerald-400 flex items-center justify-center shadow-lg shadow-indigo-500/50 border border-white/20"
+               style="animation: floatSlow 20s ease-in-out infinite;">
+            <span class="text-[0.75rem] sm:text-xs font-bold tracking-tight text-slate-950">AI</span>
+          </div>
+          <div class="absolute inset-0 blur-xl bg-indigo-500/50 opacity-60 -z-10"></div>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base sm:text-2xl font-semibold tracking-tight">
+              AI Interview Buddy
+            </h1>
+            <span class="hidden sm:inline-flex text-[0.6rem] px-2 py-0.5 rounded-full border border-emerald-400/40 bg-emerald-400/10 text-emerald-100 font-medium tracking-wide">
+              Local · Private
+            </span>
+          </div>
+          <p class="text-[0.7rem] sm:text-xs text-slate-400 mt-0.5">
+            Subject-wise interview practice · Descriptive & MCQ · Powered by your local LLM
+          </p>
+          <!-- subtle animated strip -->
+          <div class="relative mt-2 h-px w-40 sm:w-56 bg-slate-700/60 overflow-hidden rounded-full">
+            <div class="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-sky-400/90 to-transparent"
+                 style="animation: scanLine 3.4s linear infinite;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hidden sm:flex flex-col items-end gap-2 text-xs text-slate-400">
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center gap-1 rounded-full border border-slate-700/80 bg-slate-900/90 px-3 py-1 shadow-sm shadow-black/40">
+            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>Ollama · llama3.2</span>
+          </span>
+          <span class="inline-flex items-center gap-1 rounded-full border border-slate-700/80 bg-slate-900/90 px-3 py-1 shadow-sm shadow-black/40">
+            <span class="h-1.5 w-1.5 rounded-full bg-sky-400"></span>
+            <span>Offline only</span>
+          </span>
+        </div>
+        <span class="text-[0.65rem] text-slate-500">
+          Focus mode · Minimize distractions · Think out loud
+        </span>
+      </div>
+    </header>
+
+    <!-- Main layout: center card -->
+    <main class="relative">
+      <!-- Outer halo -->
+      <div class="absolute -inset-[2px] rounded-[1.9rem] bg-gradient-to-tr from-indigo-500/35 via-sky-500/30 to-emerald-400/30 blur-xl opacity-80 pointer-events-none"></div>
+
+      <div class="relative rounded-[1.9rem] border border-slate-800/80 bg-slate-950/80 backdrop-blur-2xl shadow-[0_40px_120px_rgba(0,0,0,0.9)] overflow-hidden card-hover-lift">
+        <!-- Vertical glowing spine on left -->
+        <div class="absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-sky-400 via-indigo-500 to-emerald-400 opacity-70"></div>
+
+        <!-- Window top bar -->
+        <div class="border-b border-slate-800/80 pl-5 pr-4 sm:px-6 py-3 flex items-center justify-between bg-slate-950/95">
+          <div class="flex items-center gap-3 text-xs text-slate-400">
+            <!-- mac-style dots -->
+            <div class="flex items-center gap-1">
+              <span class="h-2.5 w-2.5 rounded-full bg-rose-500/90"></span>
+              <span class="h-2.5 w-2.5 rounded-full bg-amber-400/90"></span>
+              <span class="h-2.5 w-2.5 rounded-full bg-emerald-400/90"></span>
+            </div>
+            <span class="hidden sm:inline text-slate-500">Practice Session</span>
+          </div>
+          <div class="hidden sm:flex items-center gap-2 text-[0.65rem] text-slate-500">
+            <span class="px-2 py-0.5 rounded-full bg-slate-900/80 border border-slate-700/80">
+              Descriptive
+            </span>
+            <span class="px-2 py-0.5 rounded-full bg-slate-900/80 border border-slate-700/80">
+              MCQ
+            </span>
+            <span class="px-2 py-0.5 rounded-full bg-slate-900/80 border border-slate-700/80">
+              Subject-wise
+            </span>
+          </div>
+        </div>
+
+        <div class="p-4 sm:p-6 lg:p-8">
+          {% block content %}{% endblock %}
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-6 text-[0.7rem] text-slate-500 flex justify-between items-center">
+      <span>Built with Flask · Tailwind · Ollama</span>
+      <span class="hidden sm:inline text-slate-600">
+        Designed for engineering students & freshers preparing for tech interviews
+      </span>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,373 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="space-y-5">
+  <!-- Session header -->
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+    <div>
+      <h2 class="text-xl sm:text-2xl font-semibold tracking-tight">
+        {{ role }}
+      </h2>
+      <p class="text-xs sm:text-sm text-slate-300 mt-1">
+        Subject:
+        <span class="font-medium text-indigo-300">{{ subject }}</span>
+      </p>
+      <p class="text-[0.7rem] text-slate-400 mt-1">
+        Difficulty: <span class="capitalize">{{ difficulty }}</span> • Mode:
+        <span class="uppercase tracking-wide text-[0.65rem] px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700">
+          {{ mode }}
+        </span>
+      </p>
+    </div>
+
+    <div class="flex flex-wrap gap-2 text-[0.7rem] text-slate-400">
+      <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full border border-slate-700 bg-slate-900/70">
+        <span class="h-1.5 w-1.5 rounded-full bg-sky-400 animate-pulse"></span>
+        <span>Descriptive</span>
+      </span>
+      <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full border border-slate-700 bg-slate-900/70">
+        <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
+        <span>MCQ</span>
+      </span>
+      <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full border border-slate-700 bg-slate-900/70">
+        <span class="h-1.5 w-1.5 rounded-full bg-indigo-400"></span>
+        <span>Local LLM</span>
+      </span>
+    </div>
+  </div>
+
+  <!-- Descriptive Section -->
+  <section id="descriptive-section" class="space-y-4">
+    <!-- Question Card -->
+    <div id="question-card"
+         class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-lg shadow-black/40">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="font-semibold text-sm text-slate-200">Descriptive Question</h3>
+        <button id="newQuestionBtn"
+                class="text-[0.7rem] px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 transition">
+          New Question
+        </button>
+      </div>
+      <p id="questionText" class="text-sm text-slate-200 italic">
+        Click "New Question" to generate a question on this subject.
+      </p>
+    </div>
+
+    <!-- Answer Card -->
+    <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-lg shadow-black/40">
+      <label class="block text-xs font-semibold text-slate-300 mb-1">
+        Your Answer
+      </label>
+      <textarea id="answerInput" rows="7"
+                class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500/70"
+                placeholder="Explain your answer in your own words. Aim for structure: definition → explanation → example."></textarea>
+      <div class="flex justify-end mt-3">
+        <button id="feedbackBtn"
+                class="px-4 py-2 rounded-2xl bg-gradient-to-r from-indigo-500 to-sky-500 text-slate-950 font-semibold text-sm shadow-md shadow-indigo-500/40 hover:scale-[1.01] active:scale-[0.99] transition-transform">
+          Get Feedback
+        </button>
+      </div>
+    </div>
+
+    <!-- Feedback Card -->
+    <div id="feedbackCard"
+         class="hidden bg-slate-950/70 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-lg shadow-black/40">
+      <h3 class="font-semibold text-sm text-slate-200 mb-2">Feedback</h3>
+
+      <p class="mb-2 text-sm">
+        Score:
+        <span id="score"
+              class="font-bold text-indigo-300 text-base"></span>
+        <span class="text-slate-400 text-xs">/ 10</span>
+      </p>
+
+      <div class="space-y-2 text-sm">
+        <div>
+          <p class="font-semibold text-slate-300 text-xs uppercase tracking-wide">Strengths</p>
+          <p id="strengths" class="text-slate-200 mt-0.5"></p>
+        </div>
+        <div>
+          <p class="font-semibold text-slate-300 text-xs uppercase tracking-wide mt-2">Improvements</p>
+          <p id="improvements" class="text-slate-200 mt-0.5"></p>
+        </div>
+        <div>
+          <p class="font-semibold text-slate-300 text-xs uppercase tracking-wide mt-2">Suggested Answer</p>
+          <p id="modelAnswer" class="text-slate-200 mt-0.5 whitespace-pre-line text-[0.85rem] leading-relaxed"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Divider -->
+  <hr class="border-slate-800/80 my-2">
+
+  <!-- MCQ Section -->
+  <section class="space-y-4">
+    <div class="flex items-center justify-between gap-2">
+      <h3 class="text-sm font-semibold text-slate-200">
+        MCQ Practice ({{ subject }})
+      </h3>
+      <button id="generateMcqBtn"
+              class="px-3 py-1.5 rounded-2xl bg-emerald-500 text-slate-950 text-xs font-semibold shadow-md shadow-emerald-500/40 hover:scale-[1.02] active:scale-[0.99] transition-transform">
+        Generate MCQ
+      </button>
+    </div>
+
+    <!-- MCQ Card -->
+    <div id="mcqCard"
+         class="hidden bg-slate-950/70 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-lg shadow-black/40">
+      <p id="mcqQuestion" class="font-medium text-sm text-slate-100 mb-4"></p>
+
+      <div id="mcqOptions" class="space-y-2"></div>
+
+      <div class="flex justify-end mt-4">
+        <button id="submitMcqBtn"
+                class="px-4 py-2 rounded-2xl bg-indigo-500 text-slate-50 text-sm font-semibold hover:bg-indigo-400 transition">
+          Submit Answer
+        </button>
+      </div>
+
+      <div id="mcqResult"
+           class="hidden mt-4 p-3 rounded-2xl bg-slate-900 border border-slate-700 text-sm">
+      </div>
+    </div>
+  </section>
+</div>
+
+<script>
+  const role = "{{ role }}";
+  const difficulty = "{{ difficulty }}";
+  const subject = "{{ subject }}";
+  const mode = "{{ mode }}" || "both";
+
+  const questionText = document.getElementById("questionText");
+  const newQuestionBtn = document.getElementById("newQuestionBtn");
+  const feedbackBtn = document.getElementById("feedbackBtn");
+  const answerInput = document.getElementById("answerInput");
+
+  const feedbackCard = document.getElementById("feedbackCard");
+  const scoreSpan = document.getElementById("score");
+  const strengthsP = document.getElementById("strengths");
+  const improvementsP = document.getElementById("improvements");
+  const modelAnswerP = document.getElementById("modelAnswer");
+
+  // NEW: keep track of questions in this session (front-end memory)
+  let askedDescriptiveQuestions = [];
+  let askedMcqQuestions = [];
+
+  let currentQuestion = "";
+
+  async function postJSON(url, payload) {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      throw new Error("Request failed with status " + res.status);
+    }
+    return res.json();
+  }
+
+  // ===== Descriptive Question Flow =====
+  newQuestionBtn.onclick = async () => {
+    feedbackCard.classList.add("hidden");
+    answerInput.value = "";
+    questionText.textContent = "Generating subject-wise question from your local AI model...";
+
+    newQuestionBtn.disabled = true;
+    newQuestionBtn.textContent = "Loading...";
+
+    try {
+      const data = await postJSON("/api/generate-question", {
+        role,
+        difficulty,
+        subject,
+        previous_questions: askedDescriptiveQuestions, // send history
+      });
+
+      currentQuestion = data.question || "No question generated.";
+      questionText.textContent = currentQuestion;
+
+      // store this question so we can avoid repeating it
+      if (
+        currentQuestion &&
+        !askedDescriptiveQuestions.includes(currentQuestion)
+      ) {
+        askedDescriptiveQuestions.push(currentQuestion);
+      }
+    } catch (err) {
+      console.error(err);
+      questionText.textContent = "Error generating question. Check Flask server & Ollama.";
+    } finally {
+      newQuestionBtn.disabled = false;
+      newQuestionBtn.textContent = "New Question";
+    }
+  };
+
+  feedbackBtn.onclick = async () => {
+    if (!currentQuestion) {
+      alert("Get a question first.");
+      return;
+    }
+    const answer = answerInput.value.trim();
+    if (!answer) {
+      alert("Please type your answer.");
+      return;
+    }
+
+    feedbackCard.classList.add("hidden");
+    feedbackBtn.disabled = true;
+    feedbackBtn.textContent = "Getting feedback...";
+
+    try {
+      const data = await postJSON("/api/feedback", {
+        role,
+        subject,
+        question: currentQuestion,
+        answer,
+      });
+
+      scoreSpan.textContent = data.score ?? "-";
+      strengthsP.textContent = data.strengths || "No strengths provided.";
+      improvementsP.textContent = data.improvements || "No improvements provided.";
+      modelAnswerP.textContent = data.model_answer || "No model answer provided.";
+
+      feedbackCard.classList.remove("hidden");
+    } catch (err) {
+      console.error(err);
+      alert("Error getting feedback. Check Flask server & Ollama logs.");
+    } finally {
+      feedbackBtn.disabled = false;
+      feedbackBtn.textContent = "Get Feedback";
+    }
+  };
+
+  // ===== MCQ PRACTICE =====
+  const generateMcqBtn = document.getElementById("generateMcqBtn");
+  const mcqCard = document.getElementById("mcqCard");
+  const mcqQuestion = document.getElementById("mcqQuestion");
+  const mcqOptionsDiv = document.getElementById("mcqOptions");
+  const submitMcqBtn = document.getElementById("submitMcqBtn");
+  const mcqResult = document.getElementById("mcqResult");
+
+  let currentMcq = null;
+  let selectedOption = null;
+
+  generateMcqBtn.onclick = async () => {
+    mcqCard.classList.add("hidden");
+    mcqResult.classList.add("hidden");
+    mcqOptionsDiv.innerHTML = "";
+    selectedOption = null;
+
+    generateMcqBtn.disabled = true;
+    generateMcqBtn.textContent = "Generating...";
+
+    try {
+      const data = await postJSON("/api/generate-mcq", {
+        role,
+        difficulty,
+        subject,
+        previous_questions: askedMcqQuestions, // send MCQ history
+      });
+      currentMcq = data;
+
+      mcqQuestion.textContent = data.question;
+
+      // store this MCQ question text to avoid repetition
+      if (
+        data.question &&
+        !askedMcqQuestions.includes(data.question)
+      ) {
+        askedMcqQuestions.push(data.question);
+      }
+
+      for (const key in data.options) {
+        const optionDiv = document.createElement("div");
+        optionDiv.className =
+          "flex items-center gap-2 p-2 rounded-xl border border-slate-700 cursor-pointer hover:bg-slate-800/80 transition";
+
+        optionDiv.innerHTML = `
+          <input type="radio" name="mcqOption" value="${key}">
+          <span class="text-sm"><strong>${key}.</strong> ${data.options[key]}</span>
+        `;
+
+        optionDiv.onclick = () => {
+          document
+            .querySelectorAll('input[name="mcqOption"]')
+            .forEach((i) => (i.checked = false));
+          optionDiv.querySelector("input").checked = true;
+          selectedOption = key;
+        };
+
+        mcqOptionsDiv.appendChild(optionDiv);
+      }
+
+      mcqCard.classList.remove("hidden");
+
+    } catch (err) {
+      alert("Error generating MCQ. Check server.");
+      console.error(err);
+    } finally {
+      generateMcqBtn.disabled = false;
+      generateMcqBtn.textContent = "Generate MCQ";
+    }
+  };
+
+  submitMcqBtn.onclick = () => {
+    if (!selectedOption) {
+      alert("Please select an option first.");
+      return;
+    }
+
+    mcqResult.classList.remove("hidden");
+
+    if (selectedOption === currentMcq.correct_answer) {
+      mcqResult.innerHTML = `
+        <p class="text-emerald-400 font-semibold text-sm">✅ Correct!</p>
+        <p class="text-xs text-slate-300 mt-1">${currentMcq.explanation}</p>
+      `;
+    } else {
+      mcqResult.innerHTML = `
+        <p class="text-rose-400 font-semibold text-sm">❌ Incorrect</p>
+        <p class="text-xs text-slate-300 mt-1">
+          Correct answer: <strong>${currentMcq.correct_answer}</strong>
+        </p>
+        <p class="text-xs text-slate-300 mt-1">${currentMcq.explanation}</p>
+      `;
+    }
+  };
+
+  // ===== MODE HANDLING (Descriptive / MCQ / Both) =====
+  (function applyMode() {
+    const questionCard = document.getElementById("question-card");
+    const answerCardEl = answerInput.closest("div");
+    const feedbackCardEl = document.getElementById("feedbackCard");
+
+    const mcqSectionWrapper = mcqCard;
+    const mcqGenerateWrapper = generateMcqBtn?.closest("div");
+
+    if (mode === "descriptive") {
+      if (questionCard) questionCard.style.display = "block";
+      if (answerCardEl) answerCardEl.style.display = "block";
+      if (feedbackCardEl) feedbackCardEl.style.display = "block";
+
+      if (mcqSectionWrapper) mcqSectionWrapper.style.display = "none";
+      if (mcqGenerateWrapper) mcqGenerateWrapper.style.display = "none";
+    } else if (mode === "mcq") {
+      if (questionCard) questionCard.style.display = "none";
+      if (answerCardEl) answerCardEl.style.display = "none";
+      if (feedbackCardEl) feedbackCardEl.style.display = "none";
+
+      if (mcqSectionWrapper) mcqSectionWrapper.style.display = "block";
+      if (mcqGenerateWrapper) mcqGenerateWrapper.style.display = "flex";
+    } else {
+      if (questionCard) questionCard.style.display = "block";
+      if (answerCardEl) answerCardEl.style.display = "block";
+      if (feedbackCardEl) feedbackCardEl.style.display = "block";
+
+      if (mcqSectionWrapper) mcqSectionWrapper.style.display = "block";
+      if (mcqGenerateWrapper) mcqGenerateWrapper.style.display = "flex";
+    }
+  })();
+</script>
+{% endblock %}

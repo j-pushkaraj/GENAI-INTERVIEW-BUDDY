@@ -1,0 +1,80 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Virtual environments
+venv/
+.env/
+.env.local
+.venv/
+
+# =========================
+# Flask
+# =========================
+instance/
+*.db
+*.sqlite3
+flask_session/
+
+# =========================
+# Environment variables
+# =========================
+.env
+.env.*
+config.py
+
+# =========================
+# Ollama / AI
+# =========================
+ollama_logs/
+*.gguf
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+
+# =========================
+# OS files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# IDE / Editor
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+# Node / Frontend (optional)
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# =========================
+# Cache / temp files
+# =========================
+.cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# =========================
+# Jupyter (if used later)
+# =========================
+.ipynb_checkpoints/

@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="flex flex-col lg:flex-row gap-6 lg:gap-10">
+  <!-- Left: Hero / description -->
+  <section class="lg:w-[45%] space-y-4">
+    <div>
+      <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight mb-2">
+        Your personal <span class="text-indigo-400">AI Interview Lab</span>
+      </h2>
+      <p class="text-sm text-slate-300 leading-relaxed">
+        Generate role & subject-specific interview questions powered by a
+        local GenAI model. Practice <span class="text-sky-300 font-medium">descriptive</span>
+        answers, sharpen your <span class="text-emerald-300 font-medium">MCQ speed</span>,
+        and get instant feedback — all offline.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3 text-[0.75rem]">
+      <div class="rounded-2xl border border-slate-800 bg-slate-900/70 px-3 py-3">
+        <p class="text-slate-400 mb-1">Modes</p>
+        <p class="font-medium text-slate-100">Descriptive / MCQ / Both</p>
+      </div>
+      <div class="rounded-2xl border border-slate-800 bg-slate-900/70 px-3 py-3">
+        <p class="text-slate-400 mb-1">Coverage</p>
+        <p class="font-medium text-slate-100">Testing, CS, IT, AI/ML, DS, Cyber</p>
+      </div>
+      <div class="rounded-2xl border border-slate-800 bg-slate-900/70 px-3 py-3">
+        <p class="text-slate-400 mb-1">Engine</p>
+        <p class="font-medium text-slate-100">Ollama • llama3.2 (local)</p>
+      </div>
+      <div class="rounded-2xl border border-slate-800 bg-slate-900/70 px-3 py-3">
+        <p class="text-slate-400 mb-1">Ideal for</p>
+        <p class="font-medium text-slate-100">Students • Freshers • Switchers</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Right: Form -->
+  <section class="lg:flex-1">
+    <form action="{{ url_for('practice') }}" method="get"
+          class="space-y-4 bg-slate-950/60 border border-slate-800 rounded-2xl px-4 sm:px-5 py-4 sm:py-5 shadow-lg shadow-black/40">
+
+      <!-- Role / Job Profile -->
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1" for="role-select">
+          Role / Job Profile
+        </label>
+        <select id="role-select" name="role" required
+                class="w-full rounded-xl text-sm p-2.5 bg-slate-900 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/70">
+          <option value="" disabled selected>Select your target role</option>
+          <option value="Software Quality Analyst">Software Quality Analyst</option>
+          <option value="Manual Tester">Manual Tester</option>
+          <option value="Automation Tester">Automation Tester</option>
+          <option value="Frontend Developer">Frontend Developer</option>
+          <option value="Backend Developer">Backend Developer</option>
+          <option value="Full Stack Developer">Full Stack Developer</option>
+          <option value="Data Analyst">Data Analyst</option>
+          <option value="Machine Learning Engineer">Machine Learning Engineer</option>
+          <option value="Data Scientist">Data Scientist</option>
+          <option value="Cyber Security Engineer">Cyber Security Engineer</option>
+          <option value="DevOps Engineer">DevOps Engineer</option>
+          <option value="Cloud Engineer">Cloud Engineer</option>
+        </select>
+        <p class="text-[0.7rem] text-slate-500 mt-1">
+          The tone & depth of questions will adapt to this role.
+        </p>
+      </div>
+
+      <!-- Subject / Topic -->
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1" for="subject-select">
+          Subject / Topic
+        </label>
+        <select id="subject-select" name="subject" required
+                class="w-full rounded-xl text-sm p-2.5 bg-slate-900 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/70">
+
+          <!-- Software Testing - Manual -->
+          <optgroup label="Software Testing - Manual">
+            <option>Software Testing - Manual Basics</option>
+            <option>SDLC & STLC</option>
+            <option>Test Case & Test Scenario Design</option>
+            <option>Bug Life Cycle, Severity & Priority</option>
+            <option>Test Design Techniques (Boundary, Equivalence, etc.)</option>
+            <option>Smoke, Sanity, Regression & Re-testing</option>
+            <option>Functional vs Non-functional Testing</option>
+          </optgroup>
+
+          <!-- Automation / Tools -->
+          <optgroup label="Automation / Tools">
+            <option>Selenium WebDriver Basics</option>
+            <option>TestNG / JUnit Basics</option>
+            <option>API Testing with Postman Basics</option>
+          </optgroup>
+
+          <!-- Core CS / IT -->
+          <optgroup label="Core CS / IT">
+            <option>Programming in C</option>
+            <option>Programming in C++</option>
+            <option>Java Programming</option>
+            <option>Python Programming</option>
+            <option>Data Structures & Algorithms</option>
+            <option>Object Oriented Programming (OOP)</option>
+            <option>Operating Systems</option>
+            <option>Database Management Systems (DBMS)</option>
+            <option>Computer Networks</option>
+            <option>Computer Organization & Architecture</option>
+            <option>Software Engineering</option>
+            <option>Web Technologies / Web Development</option>
+            <option>Theory of Computation / Automata Theory</option>
+          </optgroup>
+
+          <!-- AI & ML -->
+          <optgroup label="AI & Machine Learning">
+            <option>Introduction to Artificial Intelligence</option>
+            <option>Machine Learning Basics (Supervised / Unsupervised)</option>
+            <option>Regression & Classification Algorithms</option>
+            <option>Deep Learning Fundamentals</option>
+            <option>Neural Networks & Backpropagation</option>
+            <option>Natural Language Processing (NLP) Basics</option>
+            <option>Computer Vision Basics</option>
+            <option>Reinforcement Learning Basics</option>
+            <option>AI Ethics & Responsible AI</option>
+          </optgroup>
+
+          <!-- Data Science -->
+          <optgroup label="Data Science & Analytics">
+            <option>Probability & Statistics for Data Science</option>
+            <option>Exploratory Data Analysis (EDA)</option>
+            <option>Data Cleaning & Preprocessing</option>
+            <option>Data Visualization (Matplotlib / Power BI / Tableau)</option>
+            <option>SQL for Data Analytics</option>
+            <option>Feature Engineering Basics</option>
+            <option>Time Series Analysis Basics</option>
+            <option>Big Data Fundamentals (Hadoop / Spark Overview)</option>
+          </optgroup>
+
+          <!-- Cyber Security -->
+          <optgroup label="Cyber Security">
+            <option>Introduction to Cyber Security</option>
+            <option>Network Security Basics</option>
+            <option>Cryptography Fundamentals</option>
+            <option>Web Application Security (OWASP Basics)</option>
+            <option>Ethical Hacking Basics</option>
+            <option>Digital Forensics Basics</option>
+            <option>Security Policies, Governance & Risk Management</option>
+          </optgroup>
+
+          <!-- IT -->
+          <optgroup label="Information Technology">
+            <option>IT Infrastructure & Networking</option>
+            <option>Cloud Computing Basics</option>
+            <option>Distributed Systems Basics</option>
+            <option>DevOps Basics (CI/CD, Git, Docker Idea)</option>
+            <option>Enterprise Systems / ERP Basics</option>
+            <option>IT Service Management (ITIL Concepts)</option>
+          </optgroup>
+
+          <!-- Frontend -->
+          <optgroup label="Frontend Development">
+            <option>HTML & CSS Basics</option>
+            <option>JavaScript Core (variables, functions, scope)</option>
+            <option>JavaScript Async (Promises, async/await)</option>
+            <option>React Basics (components, props, state)</option>
+            <option>React Hooks (useState, useEffect)</option>
+            <option>Responsive Design & Tailwind CSS Basics</option>
+          </optgroup>
+
+          <!-- Programming Fundamentals -->
+          <optgroup label="Programming Fundamentals">
+            <option>Basic Programming Logic (loops, conditionals, functions)</option>
+            <option>OOP Concepts (Class, Object, Inheritance, Polymorphism)</option>
+            <option>Exception Handling & Error Handling</option>
+            <option>Data Structures Basics (Array, List, Stack, Queue)</option>
+            <option>Algorithms Basics (Time Complexity, Big-O idea)</option>
+          </optgroup>
+
+          <!-- Aptitude & HR -->
+          <optgroup label="Aptitude & Reasoning">
+            <option>Aptitude - Quantitative (ratios, percentages, profit & loss)</option>
+            <option>Aptitude - Logical Reasoning</option>
+            <option>Puzzles & Brain Teasers</option>
+          </optgroup>
+
+          <optgroup label="HR / Soft Skills">
+            <option>HR & Behavioral Questions</option>
+            <option>Communication & Teamwork</option>
+            <option>Strengths, Weaknesses & Self-Introduction</option>
+            <option>Leadership & Conflict Resolution</option>
+          </optgroup>
+        </select>
+        <p class="text-[0.7rem] text-slate-500 mt-1">
+          The AI will focus questions and feedback on this topic.
+        </p>
+      </div>
+
+      <!-- Mode -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1" for="mode-select">
+            Practice Mode
+          </label>
+          <select id="mode-select" name="mode" required
+                  class="w-full rounded-xl text-sm p-2.5 bg-slate-900 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/70">
+            <option value="" disabled selected>Select mode</option>
+            <option value="descriptive">Descriptive only</option>
+            <option value="mcq">MCQ only</option>
+            <option value="both">Both (Descriptive + MCQ)</option>
+          </select>
+          <p class="text-[0.7rem] text-slate-500 mt-1">
+            Tune sessions based on how you want to practice today.
+          </p>
+        </div>
+
+        <!-- Difficulty -->
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 mb-1" for="difficulty-select">
+            Difficulty
+          </label>
+          <select id="difficulty-select" name="difficulty" required
+                  class="w-full rounded-xl text-sm p-2.5 bg-slate-900 border border-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/70">
+            <option value="" disabled selected>Select difficulty</option>
+            <option value="easy">Easy (Basics / Fresher)</option>
+            <option value="medium">Medium (1–2 years)</option>
+            <option value="hard">Hard (2+ years / deep)</option>
+          </select>
+          <p class="text-[0.7rem] text-slate-500 mt-1">
+            Start from easy, gradually move to hard for deep revision.
+          </p>
+        </div>
+      </div>
+
+      <button
+        class="w-full mt-1 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-indigo-500 via-sky-500 to-emerald-400 text-slate-950 font-semibold text-sm shadow-lg shadow-indigo-500/40 hover:scale-[1.01] active:scale-[0.99] transition-transform">
+        Start Subject-wise Practice
+      </button>
+    </form>
+  </section>
+</div>
+{% endblock %}
